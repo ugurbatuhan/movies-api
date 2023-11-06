@@ -1,0 +1,29 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: movie-app-mongodb
+    ports:
+      - '27017:27017'
+    environment:
+      - MONGODB_DATABASE="db"
+    volumes:
+      - ./mongo-data:/data/db
+    networks:
+      - movie-app-network
+
+  nestjs-app:
+    build:
+      context: ../movies-api
+      dockerfile: Dockerfile
+    links:
+      - "mongodb:database"
+    container_name: movie-app-nestjs
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongodb
+    networks:
+      - movie-app-network
+networks:
+  movie-app-network:
+    external: false
